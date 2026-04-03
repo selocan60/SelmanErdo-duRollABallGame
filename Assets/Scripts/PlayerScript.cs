@@ -21,6 +21,16 @@ public class PlayerController : MonoBehaviour
         Vector3 movement = new Vector3(moveHorizontal, 0.0f, moveVertical);
         rb.AddForce(movement * speed);
     }
+    // Bu kısmı FixedUpdate fonksiyonunun hemen altına (ama sınıfın dışına çıkmadan) yapıştır
+    private void OnTriggerEnter(Collider other)
+    {
+        // Paraların Tag'ini Unity'de "PickUp" yaptıysan burası çalışır
+        if (other.gameObject.CompareTag("PickUp"))
+        {
+            other.gameObject.SetActive(false); // Parayı yok et
+            Debug.Log("Para toplandı!"); // Kontrol için konsola yazdır
+        }
+    }
 
     // Zıplama gibi anlık tuş basımlarını Update içinde kontrol etmek daha sağlıklıdır
     void Update()
