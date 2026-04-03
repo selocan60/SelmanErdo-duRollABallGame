@@ -1,4 +1,5 @@
 using UnityEngine;
+using TMPro; // TextMeshPro (UI) kütüphanesini dahil ettik
 
 public class PlayerController : MonoBehaviour
 {
@@ -7,9 +8,17 @@ public class PlayerController : MonoBehaviour
 
     private Rigidbody rb;
 
+    // --- SKOR VE UI DEĞİŞKENLERİ ---
+    private int score;
+    public TextMeshProUGUI scoreText;
+
     void Start()
     {
         rb = GetComponent<Rigidbody>();
+
+        // Oyun başladığında skoru 0 yap ve ekrana yazdır
+        score = 0;
+        SetScoreText();
     }
 
     // İleri/Geri ve Sağ/Sol hareketleri (Sürekli uygulanan güçler)
@@ -21,14 +30,19 @@ public class PlayerController : MonoBehaviour
         Vector3 movement = new Vector3(moveHorizontal, 0.0f, moveVertical);
         rb.AddForce(movement * speed);
     }
-    // Bu kısmı FixedUpdate fonksiyonunun hemen altına (ama sınıfın dışına çıkmadan) yapıştır
+
     private void OnTriggerEnter(Collider other)
     {
         // Paraların Tag'ini Unity'de "PickUp" yaptıysan burası çalışır
         if (other.gameObject.CompareTag("PickUp"))
         {
             other.gameObject.SetActive(false); // Parayı yok et
-            Debug.Log("Para toplandı!"); // Kontrol için konsola yazdır
+
+            // --- SKOR EKLEME BÖLÜMÜ ---
+            score = score + 1; // Skoru 1 artır
+            SetScoreText();    // UI ekranındaki metni güncelle
+
+            Debug.Log("Para toplandı! Yeni Skor: " + score); // Kontrol için konsola yazdır
         }
     }
 
@@ -41,5 +55,12 @@ public class PlayerController : MonoBehaviour
             // Vector3.up (0, 1, 0) yönünde, anlık bir patlama gücü (Impulse) uygular
             rb.AddForce(Vector3.up * jumpForce, ForceMode.Impulse);
         }
+    }
+
+    // --- SKOR METNİNİ GÜNCELLEYEN YARDIMCI FONKSİYON ---
+    void SetScoreText()
+    {
+        // Ekranda yazacak olan tam metni belirliyoruz
+        scoreText.text = "Score: " + score.ToString();
     }
 }
